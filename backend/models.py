@@ -6,7 +6,7 @@ class Admin(db.Model):
     __tablename__="admin"
     id = db.Column(db.Integer , primary_key = True , autoincrement = True)
     email = db.Column(db.Integer ,unique = True)
-    password = db.Column(db.Integer )
+    password = db.Column(db.String)
 
 
 class Customer(db.Model):
@@ -14,7 +14,7 @@ class Customer(db.Model):
     id = db.Column(db.Integer , primary_key = True , autoincrement = True)
     email = db.Column(db.Integer ,unique = True)
     name = db.Column(db.String)
-    password = db.Column(db.Integer )
+    password = db.Column(db.String )
     address = db.Column(db.String)
     city = db.Column(db.String)
     sent_bookings = db.relationship("Booking",backref = "customer")
