@@ -1,6 +1,7 @@
 from  flask import render_template , redirect ,request
 from flask import current_app as app
 from .models import db, Customer,Professional,ServiceCategory,Admin
+from flask_login import login_required,login_user,current_user,logout_user
 
 
 @app.route("/" , methods = ["GET" , "POST"])
@@ -16,24 +17,25 @@ def login():
     elif request.method =="POST":
         email = request.form.get("email")
         pwd = request.form.get("password")
-        
         user  = db.session.query(Customer).filter_by(email = email).first() or db.session.query(Professional).filter_by(email = email).first() or db.session.query(Admin).filter_by(email = email).first()
-      
         if not user:
             return "emaill does not exist"
         else:
             if isinstance(user , Customer):
                 if user.password ==pwd:
-                    return redirect("/dashboard/customer")
+                    login_user(user)
+                    return redirect(f"/dashboard/customer?id={user.id}")
                 else:
                     return "password does not match for customer"
             if isinstance(user , Professional):
                 if user.password ==pwd:
+                    login_user(user)
                     return redirect("/dashboard/professional")    
                 else:
                     return "password does not match"            
             if isinstance(user , Admin):
                 if user.password ==pwd:
+                    login_user(user)
                     return redirect("/dashboard/admin")     
                 else:
                     return "password does not match"
@@ -84,13 +86,29 @@ def register(utype):
     
 
 @app.route("/dashboard/admin" , methods=["GET" ,"POST"])
+@login_required
 def admin_dash():
-    return "<h1>admin dashboard</h1>"
+    cats = db.session.query(ServiceCategory).all()
+    return render_template("admin/dashboard.html" , cu = current_user,cats = cats)
 
 @app.route("/dashboard/customer" , methods=["GET" ,"POST"])
+@login_required
 def cust_dash():
+    print(current_user.email)
     return "<h1>Customer dashboard</h1>"
 
 @app.route("/dashboard/professional" , methods=["GET" ,"POST"])
+@login_required
 def prof_dash():
     return "<h1>Professional dashboard</h1>"
+
+
+
+
+@app.route("/logout" , methods=["GET"])
+@login_required
+def log_out():
+
+    logout_user()
+    return redirect("/login")
+
