@@ -1,4 +1,4 @@
-from  flask import render_template , redirect ,request
+from  flask import render_template , redirect ,request,flash
 from flask import current_app as app
 from .models import db, Customer,Professional,ServiceCategory,Admin
 from flask_login import login_required,login_user,current_user,logout_user
@@ -88,8 +88,49 @@ def register(utype):
 @app.route("/dashboard/admin" , methods=["GET" ,"POST"])
 @login_required
 def admin_dash():
-    cats = db.session.query(ServiceCategory).all()
-    return render_template("admin/dashboard.html" , cu = current_user,cats = cats)
+    if isinstance(current_user,Admin):
+        if request.method == "GET":
+            cats = db.session.query(ServiceCategory).all()
+            active_prof = db.session.query(Professional).filter_by(status="Active").all()
+            return render_template("admin/dashboard.html" , cu = current_user,cats = cats , active_prof = active_prof)
+        elif request.method == "POST":
+            if request.args.get("job") =="create":
+                cat_name = request.form.get("cat_name")
+                cat_desc = request.form.get("cat_desc")
+                cat_price = request.form.get("cat_price")
+                if cat_name and cat_desc and  cat_price:
+                    cat = db.session.query(ServiceCategory).filter_by(name = cat_name).first()
+                    if not cat:
+                        new_cat = ServiceCategory(name = cat_name , descripiton = cat_desc, base_price = cat_price)
+                        db.session.add(new_cat)
+                        db.session.commit()
+                        
+                        return redirect("/dashboard/admin")
+                    else : 
+                        flash("Category alerady exist","warning")
+                        return redirect("/dashboard/admin")
+                else:
+                    flash("Important fields missing","warning")
+                    return redirect("/dashboard/admin")
+            elif request.args.get("job") == "editcat":
+
+                cat_id = request.args.get('id')
+                name = request.form.get("cat_name")
+                desc = request.form.get("cat_desc")
+                price = request.form.get("cat_price")
+                cat = db.session.query(ServiceCategory).filter_by(id = cat_id).first()
+                if name:
+                    cat.name = name
+                if desc:
+                    cat.descripiton = desc
+                if price:
+                    cat.base_price = price
+                db.session.commit()
+                flash("category is updated" ,"success")
+                return redirect("/dashboard/admin")
+        
+    else:
+        return "you are not authorised to go to this url"
 
 @app.route("/dashboard/customer" , methods=["GET" ,"POST"])
 @login_required

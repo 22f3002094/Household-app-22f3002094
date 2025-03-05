@@ -39,6 +39,7 @@ class Professional(db.Model,UserMixin):
     id = db.Column(db.Integer , primary_key = True , autoincrement = True)
     email = db.Column(db.Integer ,unique = True)
     name = db.Column(db.String,nullable = False)
+    status = db.Column(db.String,nullable = False)
     password = db.Column(db.String )
     city = db.Column(db.String,nullable = False)
     experiance = db.Column(db.String , nullable= False)
@@ -47,6 +48,7 @@ class Professional(db.Model,UserMixin):
     all_plans = db.relationship("ServicePlan",backref = "professional")
     def get_id(self):
         return self.email
+
 
 class ServicePlan(db.Model):
     __tablename__="serviceplan"
