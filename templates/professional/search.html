@@ -1,0 +1,19 @@
+{% extends "professional/base.html" %}
+
+{% block title %}
+<title>Helpify - Professional Search</title>
+{% endblock %}
+
+{% block content %}
+{% if cu.status == "Active" %}
+    <p>Search for professional</p>
+
+{% elif cu.status == "Requested" %}
+<p> Your application has been sent to admin. Wait for sometime. </p>
+{% elif cu.status == "Rejected" %}
+<p>Sorry!! you application has been rejected by the admin.</p>
+{% elif cu.status == "Flagged" %}
+<p>Oops!! you have been flagged by admin. please contact the admin</p>
+
+{% endif %}
+{% endblock %}

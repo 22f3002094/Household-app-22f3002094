@@ -1,0 +1,106 @@
+{% extends "customer/base.html" %}
+
+{% block title %}
+<title>Helpify - Customer Search</title>
+{% endblock %}
+
+{% block content %}
+<div class="card m-5">
+    <div class="card-body">
+        <form action="/customer/search" method="POST">
+            <div class="form-floating ">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-floating mb-3">
+                            <select id="floatingInput" class="form-control" name="category" required>
+                                <option>Select a category</option>
+                                {% for cat in cats %}
+                                <option value="{{cat.id}}">{{cat.name}}</option>
+
+                                {% endfor %}
+                            </select>
+                            <label for="floatingInput">Category</label>
+                        </div>
+
+                    </div>
+                    <div class="col-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingPassword" name="plan_keyword"
+                                placeholder="Password">
+                            <label for="floatingPassword">Plan</label>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+{% if plans %}
+<div class="card m-5">
+    <div class="card-header">
+        <h4>Search Result for {{catname}}</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for plan in plans %}
+            <div class="col-2">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6>{{plan.name}}</h6>
+                        <p>By: {{plan.professional.name}}</p>
+                        <p>Price : {{plan.price}}</p>
+                        <button class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#book-{{plan.id}}">Book</button>
+                        <div class="modal fade" id="book-{{plan.id}}" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Book Plan</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/booking?job=book&p_id={{plan.id}}&prof_id={{plan.professional.id}}" method="POST"
+                                            class="p-3">
+                                            <div class="form-floating mb-3">
+                                                <input type="date" class="form-control" id="floatingInput"
+                                                    name="book_date" placeholder="Category Name" required>
+                                                <label for="floatingInput">Date</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="time" class="form-control" id="floatingPassword"
+                                                    name="book_time" placeholder="Desc" required>
+                                                <label for="floatingPassword">Time</label>
+                                            </div>
+                                            
+                                            <div class="text-center mt-3">
+                                                <button type="submit" class="btn btn-primary">Book</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center">NO Result Found.</div>
+{% endif %}
+
+{% endblock%}

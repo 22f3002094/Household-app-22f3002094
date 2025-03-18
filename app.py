@@ -1,7 +1,7 @@
 from flask import Flask
 from backend.models import db
 from flask_login import LoginManager
-
+from backend.api import api
 app = None
 def initialise_app():
     app = Flask(__name__)
@@ -16,6 +16,7 @@ def initialise_app():
         return user
 
     db.init_app(app)
+    api.init_app(app)
     with app.app_context():
         db.create_all()
 

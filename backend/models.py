@@ -19,15 +19,16 @@ class Customer(db.Model,UserMixin):
     name = db.Column(db.String)
     password = db.Column(db.String )
     address = db.Column(db.String)
+    status = db.Column(db.String,nullable = False)
     city = db.Column(db.String)
     sent_bookings = db.relationship("Booking",backref = "customer")
     def get_id(self):
         return self.email
-
+    
 class ServiceCategory(db.Model):
     __tablename__="servicecategory"
     id = db.Column(db.Integer , primary_key = True , autoincrement = True) 
-    name = db.Column(db.String,nullable = False)
+    name = db.Column(db.String,nullable = False , unique=True)
     descripiton = db.Column(db.String,nullable = False)
     base_price = db.Column(db.Integer)
     all_plans = db.relationship("ServicePlan",backref = "category")
@@ -66,6 +67,8 @@ class Booking(db.Model):
     id = db.Column(db.Integer , primary_key = True , autoincrement = True)
     date = db.Column(db.String)
     time = db.Column(db.String)
+    status = db.Column(db.String,nullable = False)
+    rating = db.Column(db.Integer)
     customer_id = db.Column(db.Integer , db.ForeignKey("customer.id"), nullable = False)
     professional_id = db.Column(db.Integer , db.ForeignKey("serviceprofessional.id"), nullable = False)
     service_plan_id = db.Column(db.Integer , db.ForeignKey("serviceplan.id"), nullable = False)
